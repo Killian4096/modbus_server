@@ -1,9 +1,11 @@
 #include "modbus_slave.h"
+#include "CRC.h"
 
 #include "modbus_slave_functions.c"
 #include "modbus_slave_exceptions.c"
 #include "modbus_slave_misc.c"
 #include "modbus_slave_diagnostics.c"
+#include "CRC.c"
 
 void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     uint8_t address = 0;
