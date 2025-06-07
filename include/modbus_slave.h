@@ -13,6 +13,9 @@
 
 void modbus_slave (struct modbus_slave_t*);
 
+//Init
+void modbus_slave_init(struct modbus_slave_t*);
+
 //Checkers
 uint8_t modbus_slave_error_check (struct modbus_slave_t*);
 //Shared code

@@ -6,7 +6,7 @@
 
 struct modbus_slave_t{
     uint8_t address;
-    uint8_t listen_only_mode;
+    uint8_t mode_listen_only;
 
     struct modbus_slave_data_buffer_t input_data_buffer;
     struct modbus_slave_data_buffer_t output_data_buffer;
@@ -15,6 +15,7 @@ struct modbus_slave_t{
 
     uint8_t exception_coils;
     uint8_t run_indicator_status;
+    uint16_t diagnostic_register;
 
 };
 

@@ -2,6 +2,11 @@
 
 void modbus_slave_func_08_diagnostics (struct modbus_slave_t* modbus_slave_tag){
 
+    //Broadcast not supported
+    if(modbus_slave_tag->input_data_buffer.array[0] == 0){
+        return;
+    }
+
     uint16_t diagnosic_subfunction = 0;
 
     if (modbus_slave_tag->input_data_buffer.length < 6){
@@ -9,7 +14,7 @@ void modbus_slave_func_08_diagnostics (struct modbus_slave_t* modbus_slave_tag){
         return;
     }
 
-    diagnosic_subfunction = (modbus_slave_tag->input_data_buffer.array[3] << 8) | modbus_slave_tag->input_data_buffer.array[2]; //Grab subfunction
+    diagnosic_subfunction = (modbus_slave_tag->input_data_buffer.array[2] << 8) | (modbus_slave_tag->input_data_buffer.array[3]); //Grab subfunction
 
     switch (diagnosic_subfunction) {
         case 0:
@@ -17,6 +22,12 @@ void modbus_slave_func_08_diagnostics (struct modbus_slave_t* modbus_slave_tag){
             break;
         case 1:
             modbus_slave_diagnostic_01_restart_comm_option(modbus_slave_tag);
+            break;
+        case 2:
+            modbus_slave_diagnostic_02_return_diagnostic_register(modbus_slave_tag);
+            break;
+        case 4:
+            modbus_slave_diagnostic_04_force_listen_only_mode(modbus_slave_tag);
             break;
         default:
             modbus_slave_exception_01_illegal_function(modbus_slave_tag);
@@ -31,7 +42,6 @@ void modbus_slave_diagnostic_00_return_query_data (struct modbus_slave_t* modbus
 }
 
 void modbus_slave_diagnostic_01_restart_comm_option (struct modbus_slave_t* modbus_slave_tag){
-    //TODO: Add functionality
     uint16_t clear_event_log;
     if (modbus_slave_tag->input_data_buffer.length != 8){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
@@ -41,10 +51,10 @@ void modbus_slave_diagnostic_01_restart_comm_option (struct modbus_slave_t* modb
     clear_event_log = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5];
 
     if(clear_event_log==0xFF00){
-        //Do something
+        //TODO:Do something
     }
     else if(clear_event_log==0x0000){
-        //Do something
+        //TODO:Do something
     }
     else{
         //0x00FF and 0x0000 ony valid, error if not those
@@ -52,17 +62,44 @@ void modbus_slave_diagnostic_01_restart_comm_option (struct modbus_slave_t* modb
         return;
     }
 
+    modbus_slave_tag->mode_listen_only=0;
+
     //Return query if all good
     modbus_slave_diagnostic_00_return_query_data(modbus_slave_tag);
 }
 
+
+
 void modbus_slave_diagnostic_02_return_diagnostic_register (struct modbus_slave_t* modbus_slave_tag){
-    //TODO: Add Functionality
+    if (modbus_slave_tag->input_data_buffer.length != 8){
+        modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
+        return;
+    }
+
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_tag->address);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 8);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 0);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 2);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, (modbus_slave_tag->diagnostic_register)>>8);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_tag->diagnostic_register);
     return;
 }
 
+
+
 void modbus_slave_diagnostic_04_force_listen_only_mode (struct modbus_slave_t* modbus_slave_tag){
-    //TODO: Add functionaity
+    //Check length
+    if (modbus_slave_tag->input_data_buffer.length != 8){
+        modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
+        return;
+    }
+
+    //Check data field for 00 00
+    if (modbus_slave_tag->input_data_buffer.array[4] || modbus_slave_tag->input_data_buffer.array[5]){
+        modbus_slave_exception_03_illegal_data_value(modbus_slave_tag);
+        return;
+    }
+    modbus_slave_tag->mode_listen_only = 1;
     return;
 }
 
