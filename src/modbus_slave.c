@@ -20,16 +20,16 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
 
     //Check proper message address + function + 2xCRC
     if(modbus_slave_tag->input_data_buffer.length < 4){
-        //No response
+        //No response on error
         return;
     }
 
 
     //Check for crc/parity error
-    /*if(modbus_slave_error_check(control, input_data_buffer)){
+    if(modbus_slave_check_communication_error(modbus_slave_tag)){
         //No response
         return;
-    }*/
+    }
 
     //Check address or broacast
     address = modbus_slave_tag->input_data_buffer.array[0];

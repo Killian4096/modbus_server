@@ -14,6 +14,16 @@ void modbus_slave_data_buffer_crc_gen(struct modbus_slave_data_buffer_t* data_bu
     //modbus_slave_data_buffer_add(data_buffer, 123);
 }
 
+uint8_t modbus_slave_check_crc(const struct modbus_slave_data_buffer_t* data_buffer){
+    uint16_t CRC_correct = CRC16(data_buffer->array, data_buffer->length-2);
+    uint16_t CRC_current = (data_buffer->array[data_buffer->length-2]<<8) | data_buffer->array[data_buffer->length-1];
+    return CRC_correct == CRC_current;
+}
+
+uint8_t modbus_slave_check_communication_error(const struct modbus_slave_t* modbus_slave_tag){
+    return modbus_slave_tag->parity_error || !modbus_slave_check_crc(&(modbus_slave_tag->input_data_buffer));
+}
+
 void modbus_slave_data_buffer_init(struct modbus_slave_data_buffer_t* data_buffer){
     data_buffer->length = 0;
 }

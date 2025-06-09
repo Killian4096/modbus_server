@@ -17,6 +17,8 @@ struct modbus_slave_t{
     uint8_t run_indicator_status;
     uint16_t diagnostic_register;
 
+    uint8_t parity_error;
+
 };
 
 typedef struct modbus_slave_t modbus_slave_t;

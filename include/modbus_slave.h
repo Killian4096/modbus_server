@@ -17,7 +17,10 @@ void modbus_slave (struct modbus_slave_t*);
 void modbus_slave_init(struct modbus_slave_t*);
 
 //Checkers
-uint8_t modbus_slave_error_check (struct modbus_slave_t*);
+uint8_t modbus_slave_check_communication_error (const struct modbus_slave_t*);
+uint8_t modbus_slave_check_crc(const struct modbus_slave_data_buffer_t*);
+
+
 //Shared code
 void modbus_slave_func_shared_read_coils (struct modbus_slave_t*, uint8_t[], size_t, uint8_t);
 void modbus_slave_func_shared_read_registers (struct modbus_slave_t*, uint16_t[], size_t, uint8_t);
