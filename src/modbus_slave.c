@@ -1,52 +1,48 @@
 #include "modbus_slave.h"
-#include "CRC.h"
 
 #include "modbus_slave_functions.c"
 #include "modbus_slave_exceptions.c"
 #include "modbus_slave_misc.c"
+#include "modbus_slave_data_buffer.c"
 #include "modbus_slave_diagnostics.c"
 #include "CRC.c"
 
-void modbus_slave_init(modbus_slave_t* modbus_slave_tag){
-    modbus_slave_tag->address = 1;
+void modbus_slave_init(modbus_slave_t* modbus_slave_tag, uint8_t address){
+    modbus_slave_tag->address = address;
     modbus_slave_tag->mode_listen_only = 0;
+    modbus_slave_Tag->check_parity=0;
 }
 
 void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
-    uint8_t address = 0;
-    uint8_t function_code = 0;
+
     //Init output
-    modbus_slave_output_data_buffer_init(modbus_slave_tag);
+    modbus_slave_output_message_buffer_init(modbus_slave_tag);
 
-    //Check proper message address + function + 2xCRC
-    if(modbus_slave_tag->input_data_buffer.length < 4){
-        //No response on error
-        return;
-    }
-
-
-    //Check for crc/parity error
-    if(modbus_slave_check_communication_error(modbus_slave_tag)){
+    //Check for crc/parity/fcs/bad length/etc error, if no error tag will be extraced
+    if(!modbus_slave_input_message_buffer_decode(modbus_slave_tag)){
         //No response
         return;
     }
+    //Gen header and set output data buffer to zero
+    modbus_slave_output_message_buffer_header_gen(modbus_slave_tag);
+    //Init output
+    modbus_slave_output_data_buffer_init(modbus_slave_tag);
 
-    //Check address or broacast
-    address = modbus_slave_tag->input_data_buffer.array[0];
-    if (address != modbus_slave_tag->address && address != 0) {
+
+
+
+    if (modbus_slave_tag->decode_buffer.address != modbus_slave_tag->address && modbus_slave_tag->decode_buffer.address != 0) {
         return; //Not for me
     }
 
     if(modbus_slave_tag->mode_listen_only){
-        if(modbus_slave_tag->input_data_buffer.array[1] == 8){
+        if(modbus_slave_tag->decode_buffer.input_data_buffer_array[0] == 8){
             modbus_slave_diagnostic_01_restart_comm_option(modbus_slave_tag);
         }
     }
     else{
-        //Get func code
-        function_code = modbus_slave_tag->input_data_buffer.array[1];
-
-        switch (function_code) {
+        //Switch based on function code
+        switch (modbus_slave_tag->decode_buffer.function_code) {
             case 1:
                 modbus_slave_func_01_read_coil_status(modbus_slave_tag);
                 break;
@@ -86,13 +82,21 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     }
 
     //If broadcast supress
-    if(address == 0){
-        modbus_slave_output_data_buffer_init(modbus_slave_tag);
+    if(modbus_slave_tag->decode_buffer.address == 0){
+        modbus_slave_output_message_buffer_init(modbus_slave_tag);
+        return;
     }
 
+    //If no value
+    if(modbus_slave_tag->output_data_buffer_length == 0){
+        modbus_slave_output_message_buffer_init(modbus_slave_tag);
+        return;
+    }
+
+    //Process message
     //Only CRC if actual message
-    if (modbus_slave_tag->output_data_buffer.length != 0) {
-        modbus_slave_data_buffer_crc_gen(&(modbus_slave_tag->output_data_buffer));
+    if (modbus_slave_tag->output_data_buffer_length != 0) {
+        modbus_slave_output_message_buffer_CRC_gen(modbus_slave_tag);
     }
 }
 

@@ -1,8 +1,5 @@
-#include "modbus_slave.h"
-
 void modbus_slave_exception_shared(struct modbus_slave_t* modbus_slave_tag, uint8_t code) {
-    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_tag->address); //Address
-    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_tag->input_data_buffer.array[1] | 1<<7);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 0) | 1<<7);
     modbus_slave_output_data_buffer_add(modbus_slave_tag, code);
 }
 

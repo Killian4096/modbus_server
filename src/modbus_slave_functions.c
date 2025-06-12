@@ -1,5 +1,3 @@
-#include "modbus_slave.h"
-
 void modbus_slave_func_01_read_coil_status (struct modbus_slave_t* modbus_slave_tag){
     modbus_slave_func_shared_read_coils(modbus_slave_tag, modbus_slave_tag->points.coils, MODBUS_SLAVE_POINTS_COILS_SIZE, 1);
 }
@@ -22,13 +20,13 @@ void modbus_slave_func_05_force_single_coil (struct modbus_slave_t* modbus_slave
     uint16_t address;
     uint16_t value;
 
-    if (modbus_slave_tag->input_data_buffer.length != 8){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 5){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
-    address = (modbus_slave_tag->input_data_buffer.array[2] << 8) | modbus_slave_tag->input_data_buffer.array[3]; //Address
-    value = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5]; //0xFF00 or 0x0000
+    address = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Address
+    value = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 3) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 4); //0xFF00 or 0x0000
 
     //If to big error
     if (address >= MODBUS_SLAVE_POINTS_COILS_SIZE){
@@ -46,8 +44,8 @@ void modbus_slave_func_05_force_single_coil (struct modbus_slave_t* modbus_slave
     modbus_slave_tag->points.coils[address/8] |= (value > 0)<<(address%8); //Toggle based on value
 
     //Echo
-    for(size_t i=0;i<modbus_slave_tag->input_data_buffer.length-2;i++){
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[i]);
+    for(size_t i=0;i<modbus_slave_input_data_buffer_length(modbus_slave_tag);i++){
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, i));
     }
 }
 
@@ -55,13 +53,13 @@ void modbus_slave_func_06_present_single_register (struct modbus_slave_t* modbus
     uint16_t address;
     uint16_t value;
 
-    if (modbus_slave_tag->input_data_buffer.length != 8){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 5){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
-    address = (modbus_slave_tag->input_data_buffer.array[2] << 8) | modbus_slave_tag->input_data_buffer.array[3]; //Address
-    value = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5]; //Value to write
+    address = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Address
+    value = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 3) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 4); //0xFF00 or 0x0000
 
     //If to big error
     if (address >= MODBUS_SLAVE_POINTS_COILS_SIZE){
@@ -72,19 +70,18 @@ void modbus_slave_func_06_present_single_register (struct modbus_slave_t* modbus
     modbus_slave_tag->points.input_registers[address] = value; //Write value
 
     //Echo
-    for(size_t i=0;i<modbus_slave_tag->input_data_buffer.length-2;i++){
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[i]);
+    for(size_t i=0;i<modbus_slave_input_data_buffer_length(modbus_slave_tag);i++){
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, i));
     }
 }
 
 void modbus_slave_func_07_read_exception_status (struct modbus_slave_t* modbus_slave_tag){
-    if (modbus_slave_tag->input_data_buffer.length != 4){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 1){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->address);
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 7);
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->exception_coils);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 7);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_tag->exception_coils);
 }
 
 void modbus_slave_func_15_force_multiple_coils (struct modbus_slave_t* modbus_slave_tag){
@@ -95,16 +92,16 @@ void modbus_slave_func_15_force_multiple_coils (struct modbus_slave_t* modbus_sl
     uint8_t byte_count;
     size_t byte_sent_count;
 
-    if (modbus_slave_tag->input_data_buffer.length < 10){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) < 7){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
-    starting_address = (modbus_slave_tag->input_data_buffer.array[2] << 8) | modbus_slave_tag->input_data_buffer.array[3]; //Pull length from array
-    count_address    = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5]; //Pull address count
+    starting_address = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Pull length from array
+    count_address    = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 3) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 4); //Pull address count
 
-    byte_count = modbus_slave_tag->input_data_buffer.array[6];
-    byte_sent_count = modbus_slave_tag->input_data_buffer.length - 9; //Determine how much sent by controller
+    byte_count = modbus_slave_input_data_buffer_get(modbus_slave_tag, 5);
+    byte_sent_count = modbus_slave_input_data_buffer_length(modbus_slave_tag) - 6; //Determine how much sent by controller
 
     //If incorrect byte count
     if ((byte_count != byte_sent_count) || (byte_count != ((count_address-1)/8 + 1))){
@@ -117,16 +114,15 @@ void modbus_slave_func_15_force_multiple_coils (struct modbus_slave_t* modbus_sl
         return;
     }
 
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->address); //Slave id
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 15); //Function Code
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 15);
 
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[2]); //High address
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[3]); //Low address
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[4]); //High count
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[5]); //Low count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 1)); //High address
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 2)); //Low address
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 3)); //High count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 4)); //Low count
 
     for(size_t i=0;i<count_address;i++){
-        value = ((modbus_slave_tag->input_data_buffer.array[(i/8)+7]) & (1<<(i%8))) > 0; //Determine 1 or 0
+        value = (( modbus_slave_input_data_buffer_get(modbus_slave_tag, (i/8)+7)) & (1<<(i%8))) > 0; //Determine 1 or 0
         modbus_slave_tag->points.coils[(starting_address+i)/8] &= ~(1<<((starting_address+i)%8)); //Turn off item
         modbus_slave_tag->points.coils[(starting_address+i)/8] |= value<<((starting_address+i)%8); //Toggle based on value
     }
@@ -142,16 +138,16 @@ void modbus_slave_func_16_present_multiple_registers (struct modbus_slave_t* mod
     uint8_t byte_count;
     size_t byte_sent_count;
 
-    if (modbus_slave_tag->input_data_buffer.length < 10){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) < 7){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
-    starting_address = (modbus_slave_tag->input_data_buffer.array[2] << 8) | modbus_slave_tag->input_data_buffer.array[3]; //Pull length from array
-    count_address    = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5]; //Pull address count
+    starting_address = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Pull length from array
+    count_address    = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 3) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 4); //Pull address count
 
-    byte_count = modbus_slave_tag->input_data_buffer.array[6];
-    byte_sent_count = modbus_slave_tag->input_data_buffer.length - 9; //Determine how much sent by controller
+    byte_count = modbus_slave_input_data_buffer_get(modbus_slave_tag, 5);
+    byte_sent_count = modbus_slave_input_data_buffer_length(modbus_slave_tag) - 6; //Determine how much sent by controller
 
     //If incorrect byte count
     if (byte_count != byte_sent_count){
@@ -164,17 +160,16 @@ void modbus_slave_func_16_present_multiple_registers (struct modbus_slave_t* mod
         return;
     }
 
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->address); //Slave id
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 16); //Function Code
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 16);
 
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[2]); //High address
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[3]); //Low address
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[4]); //High count
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->input_data_buffer.array[5]); //Low count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 1)); //High address
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 2)); //Low address
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 3)); //High count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, modbus_slave_input_data_buffer_get(modbus_slave_tag, 4)); //Low countt
 
     //Load registers in
     for(size_t i=0;i<count_address;i++){
-        modbus_slave_tag->points.holding_registers[starting_address + i] = (modbus_slave_tag->input_data_buffer.array[i*2+7]<<8) | (modbus_slave_tag->input_data_buffer.array[i*2+8]); //Write register high and low
+        modbus_slave_tag->points.holding_registers[starting_address + i] = (modbus_slave_input_data_buffer_get(modbus_slave_tag,i*2+7)<<8) | (modbus_slave_input_data_buffer_get(modbus_slave_tag,i*2+8)); //Write register high and low
     }
 
     return;
@@ -183,19 +178,18 @@ void modbus_slave_func_16_present_multiple_registers (struct modbus_slave_t* mod
 
 void modbus_slave_func_17_report_slave_id (struct modbus_slave_t* modbus_slave_tag){
     //TODO: Develop specs for this
-    if (modbus_slave_tag->input_data_buffer.length != 4){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 1){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->address);
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 17);
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 1); //Byte Count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 17);
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, 1); //Byte Count
     //If any value send 0xFF, 0xFF and 0x00 only valid
     if (modbus_slave_tag->run_indicator_status) {
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 0xFF);
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, 0xFF);
     }
     else{
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), 0x00);
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, 0x00);
     }
 }
 
@@ -211,34 +205,33 @@ void modbus_slave_func_shared_read_coils (struct modbus_slave_t* modbus_slave_ta
     size_t i = 0;
     uint8_t register_buffer = 0;
 
-    if (modbus_slave_tag->input_data_buffer.length != 8){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 5){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
-    starting_address = (modbus_slave_tag->input_data_buffer.array[2] << 8) | modbus_slave_tag->input_data_buffer.array[3]; //Pull length from array
-    count_address    = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5]; //Pull address count
+    starting_address = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Pull length from array
+    count_address    = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 3) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 4); //Pull address count
 
     if (starting_address+count_address > array_length){
         modbus_slave_exception_02_illegal_data_address(modbus_slave_tag);
         return;
     }
 
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->address); //Slave id
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), function_code); //Function Code
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), (count_address-1)/8+1); //Byte count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, function_code); //Function Code
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, (count_address-1)/8+1); //Byte count
 
     while(i<count_address){
         register_buffer |= ( ( array[(starting_address+i)/8] & (1 << (starting_address+i)%8) ) > 0 ) << i;
         i += 1;
         //If register buffer filled, add to array and reset
         if (i%8 == 0){
-            modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), register_buffer);
+            modbus_slave_output_data_buffer_add(modbus_slave_tag, register_buffer);
             register_buffer = 0;
         }
     }
     if (i%8 != 0){
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), register_buffer);
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, register_buffer);
         register_buffer = 0;
     }
 
@@ -250,26 +243,25 @@ void modbus_slave_func_shared_read_registers (struct modbus_slave_t* modbus_slav
     uint16_t starting_address;
     uint16_t count_address;
 
-    if (modbus_slave_tag->input_data_buffer.length != 8){
+    if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 5){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
-    starting_address = (modbus_slave_tag->input_data_buffer.array[2] << 8) | modbus_slave_tag->input_data_buffer.array[3]; //Pull length from array
-    count_address    = (modbus_slave_tag->input_data_buffer.array[4] << 8) | modbus_slave_tag->input_data_buffer.array[5]; //Pull address count
+    starting_address = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Pull length from array
+    count_address    = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 3) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 4); //Pull address count
 
     if (starting_address+count_address > array_length){
         modbus_slave_exception_02_illegal_data_address(modbus_slave_tag);
         return;
     }
 
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), modbus_slave_tag->address); //Slave id
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), function_code); //Function Code
-    modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), count_address * 2); //Byte count
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, function_code); //Function Code
+    modbus_slave_output_data_buffer_add(modbus_slave_tag, count_address * 2); //Byte count
 
     for(size_t i=starting_address;i<starting_address+count_address;i++){
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), array[i]>>8); //High
-        modbus_slave_data_buffer_add(&(modbus_slave_tag->output_data_buffer), array[i]);    //Low
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, array[i]>>8); //High
+        modbus_slave_output_data_buffer_add(modbus_slave_tag, array[i]);    //Low
     }
 
     return;
