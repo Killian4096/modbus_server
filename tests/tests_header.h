@@ -1,0 +1,32 @@
+void modbus_slave_test_input_message_buffer_generate_header(modbus_slave_t*);
+void modbus_slave_test_input_message_buffer_generate_header_RTU(modbus_slave_t*);
+void modbus_slave_test_input_message_buffer_generate_header_ASCII(modbus_slave_t*);
+
+void modbus_slave_test_input_message_buffer_generate_footer(modbus_slave_t*);
+void modbus_slave_test_input_message_buffer_generate_footer_RTU(modbus_slave_t*);
+void modbus_slave_test_input_message_buffer_generate_footer_ASCII(modbus_slave_t*);
+
+
+//ACCESSORS
+void modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_t*, uint8_t);
+void modbus_slave_test_input_message_buffer_add_formatted_RTU(modbus_slave_t*, uint8_t);
+void modbus_slave_test_input_message_buffer_add_formatted_ASCII(modbus_slave_t*, uint8_t);
+
+uint8_t modbus_slave_test_output_message_buffer_get_formatted(modbus_slave_t*, size_t);
+uint8_t modbus_slave_test_output_message_buffer_get_formatted_RTU(modbus_slave_t*, size_t);
+uint8_t modbus_slave_test_output_message_buffer_get_formatted_ASCII(modbus_slave_t*, size_t);
+
+
+
+uint8_t modbus_slave_test_output_message_buffer_check_header(modbus_slave_t*);
+uint8_t modbus_slave_test_output_message_buffer_check_header_RTU(modbus_slave_t*);
+uint8_t modbus_slave_test_output_message_buffer_check_header_ASCII(modbus_slave_t*);
+
+uint8_t modbus_slave_test_output_message_buffer_check_footer(modbus_slave_t*);
+uint8_t modbus_slave_test_output_message_buffer_check_footer_RTU(modbus_slave_t*);
+uint8_t modbus_slave_test_output_message_buffer_check_footer_ASCII(modbus_slave_t*);
+
+//Data Buffer
+uint8_t modbus_slave_test_output_data_buffer_get_formatted(modbus_slave_t*, size_t);
+uint8_t modbus_slave_test_output_data_buffer_get_formatted_RTU(modbus_slave_t*, size_t);
+uint8_t modbus_slave_test_output_data_buffer_get_formatted_ASCII(modbus_slave_t*, size_t);

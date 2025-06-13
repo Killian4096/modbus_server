@@ -4,16 +4,12 @@ void modbus_slave_func_08_diagnostics (struct modbus_slave_t* modbus_slave_tag){
 
     uint16_t diagnosic_subfunction = 0;
 
-    printf("Length:%lu\n", modbus_slave_input_data_buffer_length(modbus_slave_tag));
-
     if (modbus_slave_input_data_buffer_length(modbus_slave_tag) < 3){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);
         return;
     }
 
     diagnosic_subfunction = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2); //Grab subfunction
-
-    printf("Dig sub:%i\n", diagnosic_subfunction);
 
     switch (diagnosic_subfunction) {
         case 0:

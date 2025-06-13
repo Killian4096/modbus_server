@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 uint8_t modbus_slave_input_message_buffer_decode(struct modbus_slave_t* modbus_slave_tag){
     switch(modbus_slave_tag->protocol){
         case MODBUS_SLAVE_PROTOCOL_RTU:

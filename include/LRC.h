@@ -3,7 +3,7 @@
 
 
 
-static unsigned char LRC(const unsigned char *, const unsigned short);
+static unsigned char LRC(const unsigned char *, size_t);
 
 
 #endif
