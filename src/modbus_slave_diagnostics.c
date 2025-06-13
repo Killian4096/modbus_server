@@ -37,6 +37,13 @@ void modbus_slave_diagnostic_00_return_query_data (struct modbus_slave_t* modbus
 }
 
 void modbus_slave_diagnostic_01_restart_comm_option (struct modbus_slave_t* modbus_slave_tag){
+    //Func is called directly so double check subfunction
+    uint16_t diagnosic_subfunction = (modbus_slave_input_data_buffer_get(modbus_slave_tag, 1) << 8) | modbus_slave_input_data_buffer_get(modbus_slave_tag, 2);
+    //Bypass if not subfunc aka called from main and not restart
+    if(diagnosic_subfunction != 01){
+        return;
+    }
+
     uint16_t clear_event_log;
     if (modbus_slave_input_data_buffer_length(modbus_slave_tag) != 5){
         modbus_slave_exception_XX_illegal_function_length(modbus_slave_tag);

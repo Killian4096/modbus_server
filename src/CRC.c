@@ -1,6 +1,6 @@
 #include "CRC.h"
 
-unsigned short CRC16(const unsigned char *puchMsg, const unsigned short usDataLen)
+static unsigned short CRC16(const unsigned char *puchMsg, const unsigned short usDataLen)
 //unsigned char *puchMsg ; /* message to calculate CRC upon */
 //unsigned short usDataLen ; /* quantity of bytes in message */
 {

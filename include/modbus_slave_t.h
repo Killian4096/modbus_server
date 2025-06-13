@@ -31,6 +31,8 @@ struct modbus_slave_t{
     uint8_t check_ip_header;
     uint8_t check_tcp;
 
+    uint8_t protocol;
+
 };
 
 typedef struct modbus_slave_t modbus_slave_t;

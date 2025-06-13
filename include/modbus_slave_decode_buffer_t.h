@@ -11,6 +11,7 @@ struct modbus_slave_decode_buffer_t{
     uint8_t* input_data_buffer_array;
     size_t input_data_buffer_length;
     uint16_t CRC;
+    uint8_t LRC;
 };
 
 

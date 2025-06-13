@@ -2,15 +2,20 @@
 
 #include "modbus_slave_functions.c"
 #include "modbus_slave_exceptions.c"
-#include "modbus_slave_misc.c"
+#include "modbus_slave_decode.c"
+#include "modbus_slave_data_buffer_t.c"
 #include "modbus_slave_data_buffer.c"
+#include "modbus_slave_message_buffer.c"
 #include "modbus_slave_diagnostics.c"
+#include "ASCII_convert.c"
 #include "CRC.c"
+#include "LRC.c"
 
-void modbus_slave_init(modbus_slave_t* modbus_slave_tag, uint8_t address){
+void modbus_slave_init(modbus_slave_t* modbus_slave_tag, uint8_t address, uint8_t protocol){
     modbus_slave_tag->address = address;
     modbus_slave_tag->mode_listen_only = 0;
-    modbus_slave_Tag->check_parity=0;
+    modbus_slave_tag->check_parity=0;
+    modbus_slave_tag->protocol = protocol;
 }
 
 void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
@@ -25,6 +30,7 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     }
     //Gen header and set output data buffer to zero
     modbus_slave_output_message_buffer_header_gen(modbus_slave_tag);
+
     //Init output
     modbus_slave_output_data_buffer_init(modbus_slave_tag);
 
@@ -36,7 +42,7 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     }
 
     if(modbus_slave_tag->mode_listen_only){
-        if(modbus_slave_tag->decode_buffer.input_data_buffer_array[0] == 8){
+        if(modbus_slave_input_data_buffer_get(modbus_slave_tag, 0) == 8){
             modbus_slave_diagnostic_01_restart_comm_option(modbus_slave_tag);
         }
     }

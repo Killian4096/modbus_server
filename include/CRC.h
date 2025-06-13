@@ -43,7 +43,7 @@ static const char auchCRCLo[] = {
     0x40
 } ;
 
-unsigned short CRC16(const unsigned char *, const unsigned short);
+static unsigned short CRC16(const unsigned char *, const unsigned short);
 
 
 #endif
