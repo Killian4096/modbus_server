@@ -26,7 +26,8 @@ uint8_t modbus_slave_data_buffer_CRC_check(const struct modbus_slave_data_buffer
 }
 
 void modbus_slave_data_buffer_LRC_gen(struct modbus_slave_data_buffer_t* data_buffer){
-    uint8_t lrc = LRC(data_buffer->array, data_buffer->length);
+    //Exclude leading :
+    uint8_t lrc = LRC(&(data_buffer->array[1]), data_buffer->length-1);
     uint16_t ascii = ASCII_convert_byte_to_ascii(lrc);
     modbus_slave_data_buffer_add(data_buffer, ascii>>8);
     modbus_slave_data_buffer_add(data_buffer, ascii);

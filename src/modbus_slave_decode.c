@@ -41,13 +41,13 @@ uint8_t modbus_slave_input_message_buffer_decode_ASCII(struct modbus_slave_t* mo
         return 0;
     }
     //If invalid length return False
-    if(modbus_slave_input_message_buffer_length(modbus_slave_tag) <  13){
+    if(modbus_slave_input_message_buffer_length(modbus_slave_tag) <  9){
         return 0;
     }
     modbus_slave_tag->decode_buffer.address = modbus_slave_input_message_buffer_get_from_ASCII(modbus_slave_tag, 1);
     modbus_slave_tag->decode_buffer.function_code = modbus_slave_input_message_buffer_get_from_ASCII(modbus_slave_tag, 3);
-    modbus_slave_tag->decode_buffer.LRC = modbus_slave_input_message_buffer_get_from_ASCII(modbus_slave_tag, modbus_slave_input_message_buffer_length(modbus_slave_tag) - 2);
+    modbus_slave_tag->decode_buffer.LRC = modbus_slave_input_message_buffer_get_from_ASCII(modbus_slave_tag, modbus_slave_input_message_buffer_length(modbus_slave_tag) - 4);
     modbus_slave_tag->decode_buffer.input_data_buffer_array = &(modbus_slave_tag->input_message_buffer.array[3]);
-    modbus_slave_tag->decode_buffer.input_data_buffer_length = (modbus_slave_input_message_buffer_length(modbus_slave_tag) - 11)/2;
+    modbus_slave_tag->decode_buffer.input_data_buffer_length = (modbus_slave_input_message_buffer_length(modbus_slave_tag) - 7)/2;
     return 1;
 }

@@ -17,20 +17,23 @@ int main(void){
     modbus_slave_input_message_buffer_add(modbus_slave_tag, '1');
     modbus_slave_input_message_buffer_add(modbus_slave_tag, '0'); // Func
     modbus_slave_input_message_buffer_add(modbus_slave_tag, '8');
-    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0'); // Data
+    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0'); // Subfunc
+    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0');
+    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0');
     modbus_slave_input_message_buffer_add(modbus_slave_tag, '0');
     modbus_slave_input_message_buffer_add(modbus_slave_tag, '0'); // LRC
-    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0');
-    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0'); // End 2
-    modbus_slave_input_message_buffer_add(modbus_slave_tag, '0');
-    modbus_slave_data_buffer_LRC_gen(&(modbus_slave_tag->input_message_buffer));
+    modbus_slave_input_message_buffer_add(modbus_slave_tag, '9');
+    modbus_slave_input_message_buffer_add(modbus_slave_tag, 0x0D); // End 2
+    modbus_slave_input_message_buffer_add(modbus_slave_tag, 0x0A);
 
     modbus_slave(modbus_slave_tag);
 
     printf("Addr:%i\n", modbus_slave_tag->decode_buffer.address);
+    printf("Func:%i\n", modbus_slave_tag->decode_buffer.function_code);
+    printf("LRC:%i\n", modbus_slave_tag->decode_buffer.LRC);
 
     for(size_t i=0;i<modbus_slave_output_message_buffer_length(modbus_slave_tag);i++){
-        printf("%c\n", modbus_slave_output_message_buffer_get(modbus_slave_tag, i));
+        printf("%lu:%c\n", i, modbus_slave_output_message_buffer_get(modbus_slave_tag, i));
     }
 
 

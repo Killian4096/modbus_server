@@ -42,7 +42,7 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     }
 
     if(modbus_slave_tag->mode_listen_only){
-        if(modbus_slave_input_data_buffer_get(modbus_slave_tag, 0) == 8){
+        if(modbus_slave_tag->decode_buffer.function_code == 8){
             modbus_slave_diagnostic_01_restart_comm_option(modbus_slave_tag);
         }
     }
@@ -101,8 +101,8 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
 
     //Process message
     //Only CRC if actual message
-    if (modbus_slave_tag->output_data_buffer_length != 0) {
-        modbus_slave_output_message_buffer_CRC_gen(modbus_slave_tag);
+    if (modbus_slave_output_message_buffer_length(modbus_slave_tag) != 0) {
+        modbus_slave_output_message_buffer_footer_gen(modbus_slave_tag);
     }
 }
 
