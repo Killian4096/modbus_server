@@ -7,7 +7,7 @@
 #include "modbus_slave_data_buffer.c"
 #include "modbus_slave_message_buffer.c"
 #include "modbus_slave_diagnostics.c"
-#include "ASCII_convert.c"
+#include "ASCII.c"
 #include "CRC.c"
 #include "LRC.c"
 

@@ -36,12 +36,12 @@ size_t modbus_slave_output_message_buffer_length(struct modbus_slave_t* modbus_s
 //ASCII
 uint8_t modbus_slave_input_message_buffer_get_from_ASCII(struct modbus_slave_t* modbus_slave_tag, uint8_t index){
     uint16_t ascii = (modbus_slave_input_message_buffer_get(modbus_slave_tag, index) << 8) | modbus_slave_input_message_buffer_get(modbus_slave_tag, index+1);
-    uint8_t byte = ASCII_convert_ascii_to_byte(ascii);
+    uint8_t byte = ASCII_ascii_to_byte(ascii);
     return byte;
 }
 
 void modbus_slave_output_message_buffer_add_to_ASCII(struct modbus_slave_t* modbus_slave_tag, uint8_t item){
-    uint16_t ascii_address = ASCII_convert_byte_to_ascii(item);
+    uint16_t ascii_address = ASCII_byte_to_ascii(item);
     modbus_slave_output_message_buffer_add(modbus_slave_tag, ascii_address>>8);
     modbus_slave_output_message_buffer_add(modbus_slave_tag, ascii_address);
 }

@@ -20,7 +20,7 @@ void modbus_slave_output_data_buffer_add_RTU(struct modbus_slave_t* modbus_slave
 }
 
 void modbus_slave_output_data_buffer_add_ASCII(struct modbus_slave_t* modbus_slave_tag, uint8_t item){
-    uint16_t ascii = ASCII_convert_byte_to_ascii(item);
+    uint16_t ascii = ASCII_byte_to_ascii(item);
     modbus_slave_output_message_buffer_add(modbus_slave_tag, ascii>>8);
     modbus_slave_output_message_buffer_add(modbus_slave_tag, ascii);
     modbus_slave_tag->output_data_buffer_length += 1;
@@ -52,7 +52,7 @@ uint8_t modbus_slave_io_data_buffer_get_RTU(struct modbus_slave_t* modbus_slave_
 
 uint8_t modbus_slave_io_data_buffer_get_ASCII(struct modbus_slave_t* modbus_slave_tag, uint8_t index, uint8_t* data_buffer_array){
     uint16_t ascii = (data_buffer_array[index*2]<<8) | data_buffer_array[index*2+1];
-    uint8_t byte = ASCII_convert_ascii_to_byte(ascii);
+    uint8_t byte = ASCII_ascii_to_byte(ascii);
     return byte;
 }
 

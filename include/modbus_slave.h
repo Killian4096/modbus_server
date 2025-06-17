@@ -11,7 +11,7 @@
 #include "modbus_slave_exceptions.h"
 #include "modbus_slave_functions.h"
 #include "modbus_slave_message_buffer.h"
-#include "ASCII_convert.h"
+#include "ASCII.h"
 #include "CRC.h"
 #include "LRC.h"
 

@@ -77,7 +77,7 @@ void modbus_slave_test_input_message_buffer_add_formatted_RTU(modbus_slave_t* mo
 }
 
 void modbus_slave_test_input_message_buffer_add_formatted_ASCII(modbus_slave_t* modbus_slave_tag, uint8_t item){
-    uint16_t ascii = ASCII_convert_byte_to_ascii(item);
+    uint16_t ascii = ASCII_byte_to_ascii(item);
     modbus_slave_input_message_buffer_add(modbus_slave_tag, ascii>>8);
     modbus_slave_input_message_buffer_add(modbus_slave_tag, ascii);
 }
@@ -104,7 +104,7 @@ uint8_t modbus_slave_test_output_message_buffer_get_formatted_RTU(modbus_slave_t
 
 uint8_t modbus_slave_test_output_message_buffer_get_formatted_ASCII(modbus_slave_t* modbus_slave_tag, size_t index){
     uint16_t ascii = (modbus_slave_output_message_buffer_get(modbus_slave_tag, 2* index + 1) << 8) | modbus_slave_output_message_buffer_get(modbus_slave_tag, 2* index + 2);
-    uint8_t byte = ASCII_convert_ascii_to_byte(ascii);
+    uint8_t byte = ASCII_ascii_to_byte(ascii);
     return byte;
 }
 
