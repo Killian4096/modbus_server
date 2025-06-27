@@ -75,15 +75,25 @@ void modbus_slave_output_message_buffer_header_gen_ASCII(struct modbus_slave_t* 
 //FOOTER GEN
 void modbus_slave_output_message_buffer_footer_gen(struct modbus_slave_t* modbus_slave_tag){
     switch(modbus_slave_tag->protocol){
+        #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_RTU
         case MODBUS_SLAVE_PROTOCOL_RTU:
             modbus_slave_output_message_buffer_footer_gen_RTU(modbus_slave_tag);
             break;
-        case MODBUS_SLAVE_PROTOCOL_RTU_OVER_TCP:
-            modbus_slave_output_message_buffer_footer_gen_RTU(modbus_slave_tag);
-            break;
+            #endif
+            #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_ASCII
         case MODBUS_SLAVE_PROTOCOL_ASCII:
             modbus_slave_output_message_buffer_footer_gen_ASCII(modbus_slave_tag);
             break;
+            #endif
+            #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_RTU_OVER_TCP
+        case MODBUS_SLAVE_PROTOCOL_RTU_OVER_TCP:
+            modbus_slave_output_message_buffer_footer_gen_RTU(modbus_slave_tag);
+            break;
+            #endif
+            #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_TCP
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            break;
+            #endif
     }
 }
 

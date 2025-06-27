@@ -38,11 +38,28 @@ uint8_t modbus_slave_input_data_buffer_get(struct modbus_slave_t* modbus_slave_t
 }
 
 uint8_t modbus_slave_output_data_buffer_get(struct modbus_slave_t* modbus_slave_tag, uint8_t index){
-    if(modbus_slave_tag->protocol == MODBUS_SLAVE_PROTOCOL_ASCII){
-        return modbus_slave_io_data_buffer_get_ASCII(modbus_slave_tag, index, modbus_slave_tag->output_data_buffer_array);
-    }
-    else{
-        return modbus_slave_io_data_buffer_get_RTU(modbus_slave_tag, index, modbus_slave_tag->output_data_buffer_array);
+    switch(modbus_slave_tag->protocol){
+        #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_RTU
+        case MODBUS_SLAVE_PROTOCOL_RTU:
+            return modbus_slave_io_data_buffer_get_RTU(modbus_slave_tag, index, modbus_slave_tag->output_data_buffer_array);
+            break;
+        #endif
+        #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_ASCII
+        case MODBUS_SLAVE_PROTOCOL_ASCII:
+            return modbus_slave_io_data_buffer_get_ASCII(modbus_slave_tag, index, modbus_slave_tag->output_data_buffer_array);
+            break;
+        #endif
+        #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_RTU_OVER_TCP
+        case MODBUS_SLAVE_PROTOCOL_RTU_OVER_TCP:
+            return modbus_slave_io_data_buffer_get_RTU(modbus_slave_tag, index, modbus_slave_tag->output_data_buffer_array);
+            break;
+        #endif
+        #ifdef MODBUS_SLAVE_COMPILE_PROTOCOL_TCP
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            break;
+        #endif
+        default:
+            return 0;
     }
 }
 
