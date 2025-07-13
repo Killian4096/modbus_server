@@ -13,7 +13,7 @@ struct modbus_slave_t{
     struct modbus_slave_data_buffer_t input_message_buffer;
     struct modbus_slave_data_buffer_t output_message_buffer;
 
-    struct modbus_slave_decode_buffer_t decode_buffer;
+    struct modbus_slave_decode_buffer_t input_message_decode_buffer;
 
     uint8_t* output_data_buffer_array;
     size_t output_data_buffer_length;

@@ -1,13 +1,13 @@
-void unit_test_diagnostics(void){
-    unit_test_diagnostic_00();
-    unit_test_diagnostic_01();
-    unit_test_diagnostic_04();
+void unit_tests_diagnostics(int test_protocol){
+    unit_tests_diagnostic_00(test_protocol);
+    unit_tests_diagnostic_01(test_protocol);
+    unit_tests_diagnostic_04(test_protocol);
 }
 
-void unit_test_diagnostic_00(void){
+void unit_tests_diagnostic_00(int test_protocol){
     modbus_slave_t mst;
     modbus_slave_t* modbus_slave_tag = &mst;
-    modbus_slave_init(modbus_slave_tag, 1, TEST_PROTOCOL);
+    modbus_slave_init(modbus_slave_tag, 1, test_protocol);
 
 
     modbus_slave_test_input_message_buffer_generate_header(modbus_slave_tag);
@@ -26,10 +26,10 @@ void unit_test_diagnostic_00(void){
 }
 
 
-void unit_test_diagnostic_01(void){
+void unit_tests_diagnostic_01(int test_protocol){
     modbus_slave_t mst;
     modbus_slave_t* modbus_slave_tag = &mst;
-    modbus_slave_init(modbus_slave_tag, 1, TEST_PROTOCOL);
+    modbus_slave_init(modbus_slave_tag, 1, test_protocol);
     //Valid 0x00FF
 
     modbus_slave_test_input_message_buffer_generate_header(modbus_slave_tag);
@@ -72,10 +72,10 @@ void unit_test_diagnostic_01(void){
 
 
 
-void unit_test_diagnostic_04(void){
+void unit_tests_diagnostic_04(int test_protocol){
     modbus_slave_t mst;
     modbus_slave_t* modbus_slave_tag = &mst;
-    modbus_slave_init(modbus_slave_tag, 1, TEST_PROTOCOL);
+    modbus_slave_init(modbus_slave_tag, 1, test_protocol);
 
     //Invalid data
     modbus_slave_test_input_message_buffer_generate_header(modbus_slave_tag);

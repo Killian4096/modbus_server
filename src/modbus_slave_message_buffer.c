@@ -79,25 +79,25 @@ void modbus_slave_output_message_buffer_header_gen(struct modbus_slave_t* modbus
 }
 
 void modbus_slave_output_message_buffer_header_gen_RTU(struct modbus_slave_t* modbus_slave_tag){
-    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->decode_buffer.address);
+    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.address);
 }
 
 void modbus_slave_output_message_buffer_header_gen_ASCII(struct modbus_slave_t* modbus_slave_tag){
     modbus_slave_output_message_buffer_add(modbus_slave_tag, ':');
-    modbus_slave_output_message_buffer_add_to_ASCII(modbus_slave_tag, modbus_slave_tag->decode_buffer.address);
+    modbus_slave_output_message_buffer_add_to_ASCII(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.address);
 }
 
 void modbus_slave_output_message_buffer_header_gen_TCP(struct modbus_slave_t* modbus_slave_tag){
-    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->decode_buffer.transaction_identifier >> 8);
-    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->decode_buffer.transaction_identifier);
-    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->decode_buffer.protocol_identifier >> 8);
-    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->decode_buffer.protocol_identifier);
+    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.transaction_identifier >> 8);
+    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.transaction_identifier);
+    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.protocol_identifier >> 8);
+    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.protocol_identifier);
 
     //Populate at later time in loop footer section
     modbus_slave_output_message_buffer_add(modbus_slave_tag, 0);
     modbus_slave_output_message_buffer_add(modbus_slave_tag, 0);
 
-    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->decode_buffer.unit_identifier);
+    modbus_slave_output_message_buffer_add(modbus_slave_tag, modbus_slave_tag->input_message_decode_buffer.unit_identifier);
 }
 
 

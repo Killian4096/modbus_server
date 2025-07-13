@@ -35,13 +35,13 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     modbus_slave_output_data_buffer_init(modbus_slave_tag);
 
     if(modbus_slave_tag->mode_listen_only){
-        if(modbus_slave_tag->decode_buffer.function_code == 8){
+        if(modbus_slave_tag->input_message_decode_buffer.function_code == 8){
             modbus_slave_diagnostic_01_restart_comm_option(modbus_slave_tag);
         }
     }
     else{
         //Switch based on function code
-        switch (modbus_slave_tag->decode_buffer.function_code) {
+        switch (modbus_slave_tag->input_message_decode_buffer.function_code) {
             case 1:
                 modbus_slave_func_01_read_coil_status(modbus_slave_tag);
                 break;
@@ -82,7 +82,7 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
 
     //TODO: Add better edge checking
     //If broadcast supress
-    if(modbus_slave_tag->decode_buffer.address == 0 && modbus_slave_tag->protocol != MODBUS_SLAVE_PROTOCOL_TCP){
+    if(modbus_slave_tag->input_message_decode_buffer.address == 0 && modbus_slave_tag->protocol != MODBUS_SLAVE_PROTOCOL_TCP){
         modbus_slave_output_message_buffer_init(modbus_slave_tag);
         return;
     }

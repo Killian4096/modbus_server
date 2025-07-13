@@ -1,3 +1,4 @@
+//Utility
 void modbus_slave_test_input_message_buffer_generate_header(modbus_slave_t*);
 void modbus_slave_test_input_message_buffer_generate_header_RTU(modbus_slave_t*);
 void modbus_slave_test_input_message_buffer_generate_header_ASCII(modbus_slave_t*);
@@ -35,7 +36,11 @@ uint8_t modbus_slave_test_output_data_buffer_get_formatted_ASCII(modbus_slave_t*
 uint8_t modbus_slave_test_output_data_buffer_get_formatted_TCP(modbus_slave_t*, size_t);
 
 
-
+//UNIT TESTS
+void modbus_server_rtu_tests();
+void modbus_server_ascii_tests();
+void modbus_server_tcp_tests();
+void unit_tests_standard(int);
 
 
 //FUNCTIONS
@@ -46,6 +51,6 @@ uint8_t modbus_slave_test_output_data_buffer_get_formatted_TCP(modbus_slave_t*, 
 
 
 //DIAGNOSICS
-void unit_test_diagnostic_00(void);
-void unit_test_diagnostic_01(void);
-void unit_test_diagnostic_04(void);
+void unit_tests_diagnostic_00(int);
+void unit_tests_diagnostic_01(int);
+void unit_tests_diagnostic_04(int);
