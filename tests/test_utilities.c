@@ -11,6 +11,9 @@ void modbus_slave_test_input_message_buffer_generate_header(modbus_slave_t* modb
         case MODBUS_SLAVE_PROTOCOL_ASCII:
             modbus_slave_test_input_message_buffer_generate_header_ASCII(modbus_slave_tag);
             break;
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            modbus_slave_test_input_message_buffer_generate_header_TCP(modbus_slave_tag);
+            break;
     }
 }
 
@@ -21,6 +24,18 @@ void modbus_slave_test_input_message_buffer_generate_header_RTU(modbus_slave_t* 
 void modbus_slave_test_input_message_buffer_generate_header_ASCII(modbus_slave_t* modbus_slave_tag){
     modbus_slave_input_message_buffer_add(modbus_slave_tag, ':');
     modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, modbus_slave_tag->address);
+}
+
+void modbus_slave_test_input_message_buffer_generate_header_TCP(modbus_slave_t* modbus_slave_tag){
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 0);
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 1);
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 0);
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 0);
+
+    //To be filled later
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 0);
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 0);
+    modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_tag, 1);
 }
 
 
@@ -40,6 +55,9 @@ void modbus_slave_test_input_message_buffer_generate_footer(modbus_slave_t* modb
         case MODBUS_SLAVE_PROTOCOL_ASCII:
             modbus_slave_test_input_message_buffer_generate_footer_ASCII(modbus_slave_tag);
             break;
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            modbus_slave_test_input_message_buffer_generate_footer_TCP(modbus_slave_tag);
+            break;
     }
 }
 
@@ -52,6 +70,13 @@ void modbus_slave_test_input_message_buffer_generate_footer_ASCII(modbus_slave_t
     modbus_slave_input_message_buffer_add(modbus_slave_tag, 0x0D);
     modbus_slave_input_message_buffer_add(modbus_slave_tag, 0x0A);
 
+}
+
+void modbus_slave_test_input_message_buffer_generate_footer_TCP(modbus_slave_t* modbus_slave_tag){
+    uint16_t length = modbus_slave_input_message_buffer_length(modbus_slave_tag);
+    length = length - 6;
+    modbus_slave_tag->input_message_buffer.array[4] = length >> 8;
+    modbus_slave_tag->input_message_buffer.array[5] = length;
 }
 
 
@@ -68,6 +93,9 @@ void modbus_slave_test_input_message_buffer_add_formatted(modbus_slave_t* modbus
             break;
         case MODBUS_SLAVE_PROTOCOL_ASCII:
             modbus_slave_test_input_message_buffer_add_formatted_ASCII(modbus_slave_tag, item);
+            break;
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            modbus_slave_test_input_message_buffer_add_formatted_RTU(modbus_slave_tag, item);
             break;
     }
 }
@@ -94,6 +122,9 @@ uint8_t modbus_slave_test_output_message_buffer_get_formatted(modbus_slave_t* mo
         case MODBUS_SLAVE_PROTOCOL_ASCII:
             return modbus_slave_test_output_message_buffer_get_formatted_ASCII(modbus_slave_tag, index);
             break;
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            return modbus_slave_test_output_message_buffer_get_formatted_RTU(modbus_slave_tag, index);
+            break;
     }
     return 0;
 }
@@ -110,11 +141,13 @@ uint8_t modbus_slave_test_output_message_buffer_get_formatted_ASCII(modbus_slave
 
 
 //HEADER CHECK
+//TODO
 uint8_t modbus_slave_test_output_message_buffer_check_header(modbus_slave_t* modbus_slave_tag){
     return 1;
 }
 
 //FOOTER CHECK
+//TODO
 uint8_t modbus_slave_test_output_message_buffer_check_footer(modbus_slave_t* modbus_slave_tag){
     return 1;
 }
@@ -130,6 +163,9 @@ uint8_t modbus_slave_test_output_data_buffer_get_formatted(modbus_slave_t* modbu
         case MODBUS_SLAVE_PROTOCOL_ASCII:
             return modbus_slave_test_output_data_buffer_get_formatted_ASCII(modbus_slave_tag, index);
             break;
+        case MODBUS_SLAVE_PROTOCOL_TCP:
+            return modbus_slave_test_output_data_buffer_get_formatted_TCP(modbus_slave_tag, index);
+            break;
     }
     return 0;
 }
@@ -140,7 +176,9 @@ uint8_t modbus_slave_test_output_data_buffer_get_formatted_ASCII(modbus_slave_t*
     return modbus_slave_test_output_message_buffer_get_formatted(modbus_slave_tag, index + 1);
 }
 
-
+uint8_t modbus_slave_test_output_data_buffer_get_formatted_TCP(modbus_slave_t* modbus_slave_tag, size_t index){
+    return modbus_slave_test_output_message_buffer_get_formatted(modbus_slave_tag, index + 7);
+}
 
 
 

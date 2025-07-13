@@ -1,7 +1,3 @@
-void unit_test_diagnostic_00(void);
-void unit_test_diagnostic_01(void);
-void unit_test_diagnostic_04(void);
-
 void unit_test_diagnostics(void){
     unit_test_diagnostic_00();
     unit_test_diagnostic_01();

@@ -1,10 +1,12 @@
 void modbus_slave_test_input_message_buffer_generate_header(modbus_slave_t*);
 void modbus_slave_test_input_message_buffer_generate_header_RTU(modbus_slave_t*);
 void modbus_slave_test_input_message_buffer_generate_header_ASCII(modbus_slave_t*);
+void modbus_slave_test_input_message_buffer_generate_header_TCP(modbus_slave_t*);
 
 void modbus_slave_test_input_message_buffer_generate_footer(modbus_slave_t*);
 void modbus_slave_test_input_message_buffer_generate_footer_RTU(modbus_slave_t*);
 void modbus_slave_test_input_message_buffer_generate_footer_ASCII(modbus_slave_t*);
+void modbus_slave_test_input_message_buffer_generate_footer_TCP(modbus_slave_t*);
 
 
 //ACCESSORS
@@ -30,3 +32,20 @@ uint8_t modbus_slave_test_output_message_buffer_check_footer_ASCII(modbus_slave_
 uint8_t modbus_slave_test_output_data_buffer_get_formatted(modbus_slave_t*, size_t);
 uint8_t modbus_slave_test_output_data_buffer_get_formatted_RTU(modbus_slave_t*, size_t);
 uint8_t modbus_slave_test_output_data_buffer_get_formatted_ASCII(modbus_slave_t*, size_t);
+uint8_t modbus_slave_test_output_data_buffer_get_formatted_TCP(modbus_slave_t*, size_t);
+
+
+
+
+
+//FUNCTIONS
+
+
+
+//EXCEPTIONS
+
+
+//DIAGNOSICS
+void unit_test_diagnostic_00(void);
+void unit_test_diagnostic_01(void);
+void unit_test_diagnostic_04(void);

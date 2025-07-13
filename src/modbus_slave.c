@@ -23,7 +23,7 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     //Init output
     modbus_slave_output_message_buffer_init(modbus_slave_tag);
 
-    //Check for crc/parity/fcs/bad length/etc error, if no error tag will be extraced
+    //Check for crc/parity/fcs/bad length/etc error, if no error tag will be extraxted
     if(!modbus_slave_input_message_buffer_decode(modbus_slave_tag)){
         //No response
         return;
@@ -31,15 +31,8 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
     //Gen header and set output data buffer to zero
     modbus_slave_output_message_buffer_header_gen(modbus_slave_tag);
 
-    //Init output
+    //Init output data buffer
     modbus_slave_output_data_buffer_init(modbus_slave_tag);
-
-
-
-
-    if (modbus_slave_tag->decode_buffer.address != modbus_slave_tag->address && modbus_slave_tag->decode_buffer.address != 0) {
-        return; //Not for me
-    }
 
     if(modbus_slave_tag->mode_listen_only){
         if(modbus_slave_tag->decode_buffer.function_code == 8){
@@ -87,8 +80,9 @@ void modbus_slave(struct modbus_slave_t* modbus_slave_tag){
         }
     }
 
+    //TODO: Add better edge checking
     //If broadcast supress
-    if(modbus_slave_tag->decode_buffer.address == 0){
+    if(modbus_slave_tag->decode_buffer.address == 0 && modbus_slave_tag->protocol != MODBUS_SLAVE_PROTOCOL_TCP){
         modbus_slave_output_message_buffer_init(modbus_slave_tag);
         return;
     }

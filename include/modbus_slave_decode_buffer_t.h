@@ -2,7 +2,7 @@
 #define __MODBUS_SLAVE_DECODE_BUFFER_T__
 
 
-//TODO: Pragma for compilation optionsd
+//TODO: Pragma for compilation options
 
 
 struct modbus_slave_decode_buffer_t{
@@ -12,6 +12,9 @@ struct modbus_slave_decode_buffer_t{
     size_t input_data_buffer_length;
     uint16_t CRC;
     uint8_t LRC;
+    uint16_t transaction_identifier;
+    uint16_t protocol_identifier;
+    uint8_t unit_identifier;
 };
 
 

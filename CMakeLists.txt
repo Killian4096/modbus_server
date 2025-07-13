@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.28)
+
+project(modbus_slave)
+
 set(LIBRARY_NAME modbus_slave)
 
 add_library(${LIBRARY_NAME} src/modbus_slave.c)
@@ -18,3 +22,5 @@ target_compile_definitions(${LIBRARY_NAME} PRIVATE MODBUS_SLAVE_COMPILE_PROTOCOL
 
 
 target_link_libraries(${TEST_NAME} PUBLIC cunit)
+
+add_subdirectory(samples)

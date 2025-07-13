@@ -4,6 +4,7 @@
 static uint8_t modbus_slave_input_message_buffer_decode(struct modbus_slave_t*);
 static uint8_t modbus_slave_input_message_buffer_decode_RTU(struct modbus_slave_t*);
 static uint8_t modbus_slave_input_message_buffer_decode_ASCII(struct modbus_slave_t*);
+static uint8_t modbus_slave_input_message_buffer_decode_TCP(struct modbus_slave_t*);
 
 
 //Public
@@ -41,9 +42,13 @@ static size_t modbus_slave_output_data_buffer_length(struct modbus_slave_t*);
 static void modbus_slave_output_message_buffer_header_gen(struct modbus_slave_t*);
 static void modbus_slave_output_message_buffer_header_gen_RTU(struct modbus_slave_t*);
 static void modbus_slave_output_message_buffer_header_gen_ASCII(struct modbus_slave_t*);
+static void modbus_slave_output_message_buffer_header_gen_TCP(struct modbus_slave_t*);
+
 
 //Footer
 static void modbus_slave_output_message_buffer_footer_gen(struct modbus_slave_t*);
 static void modbus_slave_output_message_buffer_footer_gen_RTU(struct modbus_slave_t*);
 static void modbus_slave_output_message_buffer_footer_gen_ASCII(struct modbus_slave_t*);
+static void modbus_slave_output_message_buffer_footer_gen_TCP(struct modbus_slave_t*);
+
 #endif
