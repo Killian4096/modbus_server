@@ -1,6 +1,6 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
-#include "modbus_slave.h"
+#include "modbus_server.h"
 #include "tests_header.h"
 
 #include "test_utilities.c"
@@ -23,15 +23,15 @@ int main(void){
 }
 
 void modbus_server_rtu_tests(){
-    unit_tests_standard(MODBUS_SLAVE_PROTOCOL_RTU);
+    unit_tests_standard(MODBUS_SERVER_PROTOCOL_RTU);
 }
 
 void modbus_server_ascii_tests(){
-    unit_tests_standard(MODBUS_SLAVE_PROTOCOL_ASCII);
+    unit_tests_standard(MODBUS_SERVER_PROTOCOL_ASCII);
 }
 
 void modbus_server_tcp_tests(){
-    unit_tests_standard(MODBUS_SLAVE_PROTOCOL_TCP);
+    unit_tests_standard(MODBUS_SERVER_PROTOCOL_TCP);
 }
 
 void unit_tests_standard(int test_protocol){

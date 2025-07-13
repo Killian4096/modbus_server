@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <string.h>
 
-#include "modbus_slave.h"
+#include "modbus_server.h"
 
 #define PORT 8080
 int main(int argc, char const *argv[])
@@ -17,9 +17,9 @@ int main(int argc, char const *argv[])
     int addrlen = sizeof(address);
 
     //Modbus Configuration Stuff
-    modbus_slave_t mst;
-    modbus_slave_t* modbus_slave_tag = &mst;
-    modbus_slave_init(modbus_slave_tag, 1, MODBUS_SLAVE_PROTOCOL_TCP);
+    modbus_server_t mst;
+    modbus_server_t* modbus_server_tag = &mst;
+    modbus_server_init(modbus_server_tag, 1, MODBUS_SERVER_PROTOCOL_TCP);
 
 
 
@@ -62,11 +62,11 @@ int main(int argc, char const *argv[])
 
         while(1){
             //Initialize modbus input_message_buffer
-            modbus_slave_input_message_buffer_init(modbus_slave_tag);
-            valread = read(new_socket, modbus_slave_tag->input_message_buffer.array, MODBUS_SLAVE_DATA_BUFFER_SIZE);
-            modbus_slave_tag->input_message_buffer.length = MODBUS_SLAVE_DATA_BUFFER_SIZE;
-            modbus_slave(modbus_slave_tag);
-            write(new_socket , modbus_slave_tag->output_message_buffer.array , modbus_slave_tag->output_message_buffer.length);
+            modbus_server_input_message_buffer_init(modbus_server_tag);
+            valread = read(new_socket, modbus_server_tag->input_message_buffer.array, MODBUS_SERVER_DATA_BUFFER_SIZE);
+            modbus_server_tag->input_message_buffer.length = MODBUS_SERVER_DATA_BUFFER_SIZE;
+            modbus_server(modbus_server_tag);
+            write(new_socket , modbus_server_tag->output_message_buffer.array , modbus_server_tag->output_message_buffer.length);
         }
         close(new_socket);
     }

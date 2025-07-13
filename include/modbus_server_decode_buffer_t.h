@@ -1,11 +1,11 @@
-#ifndef __MODBUS_SLAVE_DECODE_BUFFER_T__
-#define __MODBUS_SLAVE_DECODE_BUFFER_T__
+#ifndef __MODBUS_SERVER_DECODE_BUFFER_T__
+#define __MODBUS_SERVER_DECODE_BUFFER_T__
 
 
 //TODO: Pragma for compilation options
 
 
-struct modbus_slave_decode_buffer_t{
+struct modbus_server_decode_buffer_t{
     uint8_t address;
     uint8_t function_code;
     uint8_t* input_data_buffer_array;
@@ -18,6 +18,6 @@ struct modbus_slave_decode_buffer_t{
 };
 
 
-typedef struct modbus_slave_decode_buffer_t modbus_slave_decode_buffer_t;
+typedef struct modbus_server_decode_buffer_t modbus_server_decode_buffer_t;
 
 #endif
