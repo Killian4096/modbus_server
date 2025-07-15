@@ -1,6 +1,6 @@
 void modbus_server_exception_shared(struct modbus_server_t* modbus_server_tag, uint8_t code) {
-    modbus_server_output_data_buffer_add(modbus_server_tag, modbus_server_input_data_buffer_get(modbus_server_tag, 0) | 1<<7);
-    modbus_server_output_data_buffer_add(modbus_server_tag, code);
+    modbus_server_output_PDU_mapper_add(modbus_server_tag, modbus_server_input_PDU_mapper_get(modbus_server_tag, 0) | 1<<7);
+    modbus_server_output_PDU_mapper_add(modbus_server_tag, code);
 }
 
 

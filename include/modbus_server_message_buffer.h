@@ -23,21 +23,6 @@ size_t modbus_server_output_message_buffer_length(struct modbus_server_t*);
 static uint8_t modbus_server_input_message_buffer_get_from_ASCII(struct modbus_server_t*, uint8_t);
 static void modbus_server_output_message_buffer_add_to_ASCII(struct modbus_server_t*, uint8_t);
 
-static void modbus_server_output_data_buffer_init(struct modbus_server_t*);
-static void modbus_server_output_data_buffer_add(struct modbus_server_t*, uint8_t);
-static void modbus_server_output_data_buffer_add_RTU(struct modbus_server_t*, uint8_t);
-static void modbus_server_output_data_buffer_add_ASCII(struct modbus_server_t*, uint8_t);
-
-static uint8_t modbus_server_input_data_buffer_get(struct modbus_server_t*, uint8_t);
-static uint8_t modbus_server_output_data_buffer_get(struct modbus_server_t*, uint8_t);
-
-static uint8_t modbus_server_io_data_buffer_get_RTU(struct modbus_server_t*, uint8_t, uint8_t*);
-static uint8_t modbus_server_io_data_buffer_get_ASCII(struct modbus_server_t*, uint8_t, uint8_t*);
-
-
-static size_t modbus_server_input_data_buffer_length(struct modbus_server_t*);
-static size_t modbus_server_output_data_buffer_length(struct modbus_server_t*);
-
 //Header
 static void modbus_server_output_message_buffer_header_gen(struct modbus_server_t*);
 static void modbus_server_output_message_buffer_header_gen_RTU(struct modbus_server_t*);
@@ -50,5 +35,15 @@ static void modbus_server_output_message_buffer_footer_gen(struct modbus_server_
 static void modbus_server_output_message_buffer_footer_gen_RTU(struct modbus_server_t*);
 static void modbus_server_output_message_buffer_footer_gen_ASCII(struct modbus_server_t*);
 static void modbus_server_output_message_buffer_footer_gen_TCP(struct modbus_server_t*);
+
+//Basic
+static void modbus_server_message_buffer_init(struct modbus_server_message_buffer_t*);
+static void modbus_server_message_buffer_add(struct modbus_server_message_buffer_t*, uint8_t);
+
+//CRC and LRC
+void modbus_server_message_buffer_CRC_gen(struct modbus_server_message_buffer_t*);
+void modbus_server_message_buffer_LRC_gen(struct modbus_server_message_buffer_t*);
+uint8_t modbus_server_message_buffer_CRC_check(const struct modbus_server_message_buffer_t*);
+uint8_t modbus_server_message_buffer_LRC_check(const struct modbus_server_message_buffer_t*);
 
 #endif

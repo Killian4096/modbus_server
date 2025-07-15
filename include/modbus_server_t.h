@@ -2,7 +2,7 @@
 #define __MODBUS_SERVER_T__
 
 #include "modbus_server_settings.h"
-#include "modbus_server_data_buffer_t.h"
+#include "modbus_server_message_buffer_t.h"
 #include "modbus_server_decode_buffer_t.h"
 #include "modbus_server_points_t.h"
 
@@ -10,13 +10,13 @@ struct modbus_server_t{
     uint8_t address;
     uint8_t mode_listen_only;
 
-    struct modbus_server_data_buffer_t input_message_buffer;
-    struct modbus_server_data_buffer_t output_message_buffer;
+    struct modbus_server_message_buffer_t input_message_buffer;
+    struct modbus_server_message_buffer_t output_message_buffer;
 
     struct modbus_server_decode_buffer_t input_message_decode_buffer;
 
-    uint8_t* output_data_buffer_array;
-    size_t output_data_buffer_length;
+    uint8_t* output_PDU_mapper_array;
+    size_t output_PDU_mapper_length;
 
     struct modbus_server_points_t points;
 

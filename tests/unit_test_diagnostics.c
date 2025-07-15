@@ -19,9 +19,9 @@ void unit_tests_diagnostic_00(int test_protocol){
     modbus_server(modbus_server_tag);
 
     CU_ASSERT(modbus_server_test_output_message_buffer_check_header(modbus_server_tag));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 0) == 8);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 1) == 0);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 2) == 0);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 0) == 8);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 1) == 0);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 2) == 0);
     CU_ASSERT(modbus_server_test_output_message_buffer_check_footer(modbus_server_tag));
 }
 
@@ -43,11 +43,11 @@ void unit_tests_diagnostic_01(int test_protocol){
     modbus_server(modbus_server_tag);
 
     CU_ASSERT(modbus_server_test_output_message_buffer_check_header(modbus_server_tag));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 0) == 8);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 1) == 0);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 2) == 1);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 3) == 0xFF);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 4) == 0);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 0) == 8);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 1) == 0);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 2) == 1);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 3) == 0xFF);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 4) == 0);
     CU_ASSERT(modbus_server_test_output_message_buffer_check_footer(modbus_server_tag));
 
 
@@ -62,8 +62,8 @@ void unit_tests_diagnostic_01(int test_protocol){
     modbus_server(modbus_server_tag);
 
     CU_ASSERT(modbus_server_test_output_message_buffer_check_header(modbus_server_tag));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 0) == 8|(1<<7));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 1) == 1);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 0) == 8|(1<<7));
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 1) == 1);
     CU_ASSERT(modbus_server_test_output_message_buffer_check_footer(modbus_server_tag));
 }
 
@@ -88,8 +88,8 @@ void unit_tests_diagnostic_04(int test_protocol){
     modbus_server(modbus_server_tag);
 
     CU_ASSERT(modbus_server_test_output_message_buffer_check_header(modbus_server_tag));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 0) == 8|(1<<7));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 1) == 1);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 0) == 8|(1<<7));
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 1) == 1);
     CU_ASSERT(modbus_server_test_output_message_buffer_check_footer(modbus_server_tag));
 
     //Invalid data 0xFFFF
@@ -104,8 +104,8 @@ void unit_tests_diagnostic_04(int test_protocol){
     modbus_server(modbus_server_tag);
 
     CU_ASSERT(modbus_server_test_output_message_buffer_check_header(modbus_server_tag));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 0) == 8|(1<<7));
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 1) == 3);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 0) == 8|(1<<7));
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 1) == 3);
     CU_ASSERT(modbus_server_test_output_message_buffer_check_footer(modbus_server_tag));
 
     //Valid turn off
@@ -145,11 +145,11 @@ void unit_tests_diagnostic_04(int test_protocol){
 
     modbus_server(modbus_server_tag);
 
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 0) == 8);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 1) == 0);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 2) == 1);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 3) == 0xFF);
-    CU_ASSERT(modbus_server_test_output_data_buffer_get_formatted(modbus_server_tag, 4) == 0);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 0) == 8);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 1) == 0);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 2) == 1);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 3) == 0xFF);
+    CU_ASSERT(modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_tag, 4) == 0);
     CU_ASSERT(modbus_server_test_output_message_buffer_check_footer(modbus_server_tag));
 
     //Check can talk

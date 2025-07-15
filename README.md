@@ -28,21 +28,21 @@ while(1){
 
     //Code to process from peripheral (RS-232, TCP, Other Serial, etc) to buffer
     //In this example buffer sends a read coil command function code 0
-    modbus_server_input_data_buffer_init(modbus_server_tag);    //Init message
-    modbus_server_input_data_buffer_add(modbus_server_tag, 2);  //Server Address 2
-    modbus_server_input_data_buffer_add(modbus_server_tag, 1);  //Function Code 1
-    modbus_server_input_data_buffer_add(modbus_server_tag, 0);  //High Byte Start Address
-    modbus_server_input_data_buffer_add(modbus_server_tag, 13); //Start Address 13
-    modbus_server_input_data_buffer_add(modbus_server_tag, 00); //High Byte Register Count
-    modbus_server_input_data_buffer_add(modbus_server_tag, 25); //Read 25 Registers
-    modbus_server_input_data_buffer_add(modbus_server_tag, 27); //CRC
-    modbus_server_input_data_buffer_add(modbus_server_tag, 0C); //CRC
+    modbus_server_input_PDU_mapper_init(modbus_server_tag);    //Init message
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 2);  //Server Address 2
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 1);  //Function Code 1
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 0);  //High Byte Start Address
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 13); //Start Address 13
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 00); //High Byte Register Count
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 25); //Read 25 Registers
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 27); //CRC
+    modbus_server_input_PDU_mapper_add(modbus_server_tag, 0C); //CRC
 
     modbus_server(modbus_server_tag) //Process request
 
     //Send request, in this case print
-    for(size_t i=0;i<modbus_server_tag.output_data_buffer.length;i++){
-        printf("%i", modbus_server_tag.output_data_buffer.array[i])
+    for(size_t i=0;i<modbus_server_tag.output_PDU_mapper.length;i++){
+        printf("%i", modbus_server_tag.output_PDU_mapper.array[i])
     }
 }
 ```

@@ -35,8 +35,8 @@ uint8_t modbus_server_input_message_buffer_decode_RTU(struct modbus_server_t* mo
     uint8_t CRC_HIGH = modbus_server_input_message_buffer_get(modbus_server_tag, modbus_server_input_message_buffer_length(modbus_server_tag)-2);
     uint8_t CRC_LOW  = modbus_server_input_message_buffer_get(modbus_server_tag, modbus_server_input_message_buffer_length(modbus_server_tag)-1);
     modbus_server_tag->input_message_decode_buffer.CRC = (CRC_HIGH<<8) | (CRC_LOW);
-    modbus_server_tag->input_message_decode_buffer.input_data_buffer_array = &(modbus_server_tag->input_message_buffer.array[1]);
-    modbus_server_tag->input_message_decode_buffer.input_data_buffer_length = modbus_server_input_message_buffer_length(modbus_server_tag) - 3;
+    modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_array = &(modbus_server_tag->input_message_buffer.array[1]);
+    modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_length = modbus_server_input_message_buffer_length(modbus_server_tag) - 3;
     if (modbus_server_tag->input_message_decode_buffer.address != modbus_server_tag->address && modbus_server_tag->input_message_decode_buffer.address != 0) {
         return 0; //Not for me
     }
@@ -64,11 +64,11 @@ uint8_t modbus_server_input_message_buffer_decode_TCP(struct modbus_server_t* mo
         return 0;
     }
     tcp_length = tcp_length - 1;
-    modbus_server_tag->input_message_decode_buffer.input_data_buffer_length = tcp_length;
+    modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_length = tcp_length;
 
     modbus_server_tag->input_message_decode_buffer.function_code = modbus_server_input_message_buffer_get(modbus_server_tag, 7);
     modbus_server_tag->input_message_decode_buffer.unit_identifier = modbus_server_input_message_buffer_get(modbus_server_tag, 6);
-    modbus_server_tag->input_message_decode_buffer.input_data_buffer_array = &(modbus_server_tag->input_message_buffer.array[7]);
+    modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_array = &(modbus_server_tag->input_message_buffer.array[7]);
 
 
     return 1;
@@ -91,8 +91,8 @@ uint8_t modbus_server_input_message_buffer_decode_ASCII(struct modbus_server_t* 
     modbus_server_tag->input_message_decode_buffer.address = modbus_server_input_message_buffer_get_from_ASCII(modbus_server_tag, 1);
     modbus_server_tag->input_message_decode_buffer.function_code = modbus_server_input_message_buffer_get_from_ASCII(modbus_server_tag, 3);
     modbus_server_tag->input_message_decode_buffer.LRC = modbus_server_input_message_buffer_get_from_ASCII(modbus_server_tag, modbus_server_input_message_buffer_length(modbus_server_tag) - 4);
-    modbus_server_tag->input_message_decode_buffer.input_data_buffer_array = &(modbus_server_tag->input_message_buffer.array[3]);
-    modbus_server_tag->input_message_decode_buffer.input_data_buffer_length = (modbus_server_input_message_buffer_length(modbus_server_tag) - 7)/2;
+    modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_array = &(modbus_server_tag->input_message_buffer.array[3]);
+    modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_length = (modbus_server_input_message_buffer_length(modbus_server_tag) - 7)/2;
     if (modbus_server_tag->input_message_decode_buffer.address != modbus_server_tag->address && modbus_server_tag->input_message_decode_buffer.address != 0) {
         return 0; //Not for me
     }

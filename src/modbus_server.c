@@ -3,8 +3,7 @@
 #include "modbus_server_functions.c"
 #include "modbus_server_exceptions.c"
 #include "modbus_server_decode.c"
-#include "modbus_server_data_buffer_t.c"
-#include "modbus_server_data_buffer.c"
+#include "modbus_server_PDU_mapper.c"
 #include "modbus_server_message_buffer.c"
 #include "modbus_server_diagnostics.c"
 #include "ASCII.c"
@@ -32,7 +31,7 @@ void modbus_server(struct modbus_server_t* modbus_server_tag){
     modbus_server_output_message_buffer_header_gen(modbus_server_tag);
 
     //Init output data buffer
-    modbus_server_output_data_buffer_init(modbus_server_tag);
+    modbus_server_output_PDU_mapper_init(modbus_server_tag);
 
     if(modbus_server_tag->mode_listen_only){
         if(modbus_server_tag->input_message_decode_buffer.function_code == 8){
@@ -88,7 +87,7 @@ void modbus_server(struct modbus_server_t* modbus_server_tag){
     }
 
     //If no value
-    if(modbus_server_tag->output_data_buffer_length == 0){
+    if(modbus_server_tag->output_PDU_mapper_length == 0){
         modbus_server_output_message_buffer_init(modbus_server_tag);
         return;
     }

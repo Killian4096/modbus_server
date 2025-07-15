@@ -1,18 +1,18 @@
 //ACCESSORS
 //INIT
 void modbus_server_input_message_buffer_init(struct modbus_server_t* modbus_server_tag){
-    modbus_server_data_buffer_init(&(modbus_server_tag->input_message_buffer));
+    modbus_server_message_buffer_init(&(modbus_server_tag->input_message_buffer));
 }
 void modbus_server_output_message_buffer_init(struct modbus_server_t* modbus_server_tag){
-    modbus_server_data_buffer_init(&(modbus_server_tag->output_message_buffer));
+    modbus_server_message_buffer_init(&(modbus_server_tag->output_message_buffer));
 }
 
 //ADD
 void modbus_server_input_message_buffer_add(struct modbus_server_t* modbus_server_tag, uint8_t item){
-    modbus_server_data_buffer_add(&(modbus_server_tag->input_message_buffer), item);
+    modbus_server_message_buffer_add(&(modbus_server_tag->input_message_buffer), item);
 }
 void modbus_server_output_message_buffer_add(struct modbus_server_t* modbus_server_tag, uint8_t item){
-    modbus_server_data_buffer_add(&(modbus_server_tag->output_message_buffer), item);
+    modbus_server_message_buffer_add(&(modbus_server_tag->output_message_buffer), item);
 }
 
 //GET
@@ -128,11 +128,11 @@ void modbus_server_output_message_buffer_footer_gen(struct modbus_server_t* modb
 }
 
 void modbus_server_output_message_buffer_footer_gen_RTU(struct modbus_server_t* modbus_server_tag){
-    modbus_server_data_buffer_CRC_gen(&(modbus_server_tag->output_message_buffer));
+    modbus_server_message_buffer_CRC_gen(&(modbus_server_tag->output_message_buffer));
 }
 
 void modbus_server_output_message_buffer_footer_gen_ASCII(struct modbus_server_t* modbus_server_tag){
-    modbus_server_data_buffer_LRC_gen(&(modbus_server_tag->output_message_buffer));
+    modbus_server_message_buffer_LRC_gen(&(modbus_server_tag->output_message_buffer));
     modbus_server_output_message_buffer_add(modbus_server_tag, 0x0D);
     modbus_server_output_message_buffer_add(modbus_server_tag, 0x0A);
 }
@@ -141,7 +141,55 @@ void modbus_server_output_message_buffer_footer_gen_TCP(struct modbus_server_t* 
     //TODO: Create proper set function
     //Direct access to add length
     //Take data buffer length and add 1 for unit idenifier
-    uint16_t output_length = modbus_server_tag->output_data_buffer_length + 1;
+    uint16_t output_length = modbus_server_tag->output_PDU_mapper_length + 1;
     modbus_server_tag->output_message_buffer.array[4] = output_length >> 8;
     modbus_server_tag->output_message_buffer.array[5] = output_length;
 }
+
+
+
+//Basic items
+void modbus_server_message_buffer_init(struct modbus_server_message_buffer_t* data_buffer){
+    data_buffer->length = 0;
+}
+
+void modbus_server_message_buffer_add(struct modbus_server_message_buffer_t* data_buffer, uint8_t item){
+    data_buffer->array[data_buffer->length] = item;
+    data_buffer->length += 1;
+}
+
+
+
+
+//CRC and LRC
+void modbus_server_message_buffer_CRC_gen(struct modbus_server_message_buffer_t* message_buffer){
+    uint16_t crc = CRC16(message_buffer->array, message_buffer->length);
+    uint8_t crc_high = crc >> 8;
+    uint8_t crc_low = crc;
+    modbus_server_message_buffer_add(message_buffer, crc_high);
+    modbus_server_message_buffer_add(message_buffer, crc_low);
+}
+
+uint8_t modbus_server_message_buffer_CRC_check(const struct modbus_server_message_buffer_t* message_buffer){
+    uint16_t CRC_correct = CRC16(message_buffer->array, message_buffer->length-3);
+    uint16_t CRC_current = (message_buffer->array[message_buffer->length-2]<<8) | message_buffer->array[message_buffer->length-1];
+    return CRC_correct == CRC_current;
+}
+
+void modbus_server_message_buffer_LRC_gen(struct modbus_server_message_buffer_t* message_buffer){
+    //Exclude leading :
+    uint8_t lrc = LRC(&(message_buffer->array[1]), message_buffer->length-1);
+    uint16_t ascii = ASCII_byte_to_ascii(lrc);
+    modbus_server_message_buffer_add(message_buffer, ascii>>8);
+    modbus_server_message_buffer_add(message_buffer, ascii);
+}
+
+uint8_t modbus_server_message_buffer_LRC_check(const struct modbus_server_message_buffer_t* message_buffer){
+    uint8_t LRC_correct = LRC(&(message_buffer->array[1]), message_buffer->length-5);
+    uint16_t ascii = message_buffer->array[message_buffer->length-4]<<8 | message_buffer->array[message_buffer->length-3];
+    uint8_t LRC_current = ASCII_ascii_to_byte(ascii);
+    return LRC_correct == LRC_current;
+}
+
+
+

@@ -24,16 +24,18 @@ uint8_t modbus_server_test_output_message_buffer_get_formatted_ASCII(modbus_serv
 uint8_t modbus_server_test_output_message_buffer_check_header(modbus_server_t*);
 uint8_t modbus_server_test_output_message_buffer_check_header_RTU(modbus_server_t*);
 uint8_t modbus_server_test_output_message_buffer_check_header_ASCII(modbus_server_t*);
+uint8_t modbus_server_test_output_message_buffer_check_header_TCP(modbus_server_t*);
 
 uint8_t modbus_server_test_output_message_buffer_check_footer(modbus_server_t*);
 uint8_t modbus_server_test_output_message_buffer_check_footer_RTU(modbus_server_t*);
 uint8_t modbus_server_test_output_message_buffer_check_footer_ASCII(modbus_server_t*);
+uint8_t modbus_server_test_output_message_buffer_check_footer_TCP(modbus_server_t*);
 
 //Data Buffer
-uint8_t modbus_server_test_output_data_buffer_get_formatted(modbus_server_t*, size_t);
-uint8_t modbus_server_test_output_data_buffer_get_formatted_RTU(modbus_server_t*, size_t);
-uint8_t modbus_server_test_output_data_buffer_get_formatted_ASCII(modbus_server_t*, size_t);
-uint8_t modbus_server_test_output_data_buffer_get_formatted_TCP(modbus_server_t*, size_t);
+uint8_t modbus_server_test_output_PDU_mapper_get_formatted(modbus_server_t*, size_t);
+uint8_t modbus_server_test_output_PDU_mapper_get_formatted_RTU(modbus_server_t*, size_t);
+uint8_t modbus_server_test_output_PDU_mapper_get_formatted_ASCII(modbus_server_t*, size_t);
+uint8_t modbus_server_test_output_PDU_mapper_get_formatted_TCP(modbus_server_t*, size_t);
 
 
 //UNIT TESTS
