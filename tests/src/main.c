@@ -3,8 +3,8 @@
 #include "modbus_server.h"
 #include "tests_header.h"
 
-#include "test_utilities.c"
-#include "unit_test_diagnostics.c"
+#include "tests_utilities.c"
+#include "unit_tests_diagnostics.c"
 
 int main(void){
     CU_initialize_registry();
