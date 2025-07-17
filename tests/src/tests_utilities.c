@@ -62,11 +62,21 @@ void modbus_server_test_input_message_buffer_generate_footer(modbus_server_t* mo
 }
 
 void modbus_server_test_input_message_buffer_generate_footer_RTU(modbus_server_t* modbus_server_tag){
-    modbus_server_message_buffer_CRC_gen(&(modbus_server_tag->input_message_buffer));
+    //Add CRC to footer
+    uint16_t crc = CRC16(modbus_server_tag->input_message_buffer.array, modbus_server_tag->input_message_buffer.length);
+    uint8_t crc_high = crc >> 8;
+    uint8_t crc_low = crc;
+    modbus_server_input_message_buffer_add(modbus_server_tag, crc_high);
+    modbus_server_input_message_buffer_add(modbus_server_tag, crc_low);
 }
 
 void modbus_server_test_input_message_buffer_generate_footer_ASCII(modbus_server_t* modbus_server_tag){
-    modbus_server_message_buffer_LRC_gen(&(modbus_server_tag->input_message_buffer));
+    //Add LRC to footer
+    //Exclude leading ':'
+    uint8_t lrc = LRC(&(modbus_server_tag->input_message_buffer.array[1]), modbus_server_tag->input_message_buffer.length-1);
+    modbus_server_test_input_message_buffer_add_formatted(modbus_server_tag, lrc);
+
+    //Characters to mark end ASCII code
     modbus_server_input_message_buffer_add(modbus_server_tag, 0x0D);
     modbus_server_input_message_buffer_add(modbus_server_tag, 0x0A);
 
@@ -105,7 +115,7 @@ void modbus_server_test_input_message_buffer_add_formatted_RTU(modbus_server_t* 
 }
 
 void modbus_server_test_input_message_buffer_add_formatted_ASCII(modbus_server_t* modbus_server_tag, uint8_t item){
-    uint16_t ascii = ASCII_byte_to_ascii(item);
+    uint16_t ascii = modbus_server_test_ASCII_byte_to_ascii(item);
     modbus_server_input_message_buffer_add(modbus_server_tag, ascii>>8);
     modbus_server_input_message_buffer_add(modbus_server_tag, ascii);
 }
@@ -135,7 +145,7 @@ uint8_t modbus_server_test_output_message_buffer_get_formatted_RTU(modbus_server
 
 uint8_t modbus_server_test_output_message_buffer_get_formatted_ASCII(modbus_server_t* modbus_server_tag, size_t index){
     uint16_t ascii = (modbus_server_output_message_buffer_get(modbus_server_tag, 2* index + 1) << 8) | modbus_server_output_message_buffer_get(modbus_server_tag, 2* index + 2);
-    uint8_t byte = ASCII_ascii_to_byte(ascii);
+    uint8_t byte = modbus_server_test_ASCII_ascii_to_byte(ascii);
     return byte;
 }
 
@@ -206,14 +216,38 @@ uint8_t modbus_server_test_output_message_buffer_check_footer(modbus_server_t* m
 }
 
 uint8_t modbus_server_test_output_message_buffer_check_footer_RTU(modbus_server_t* modbus_server_tag){
-    return 1; //TODO
+    //Length check
+    if(modbus_server_output_message_buffer_length(modbus_server_tag) < 4){
+        return 0;
+    }
+
+    //CRC
+    uint16_t CRC_correct = CRC16(modbus_server_tag->output_message_buffer.array, modbus_server_tag->output_message_buffer.length-2);
+    uint16_t CRC_current = modbus_server_output_message_buffer_get(modbus_server_tag, modbus_server_output_message_buffer_length(modbus_server_tag)-2)<<8 |
+    modbus_server_output_message_buffer_get(modbus_server_tag, modbus_server_output_message_buffer_length(modbus_server_tag)-1);
+    if(CRC_correct != CRC_current){
+        return 0;
+    }
+
+    return 1;
 }
 
 uint8_t modbus_server_test_output_message_buffer_check_footer_ASCII(modbus_server_t* modbus_server_tag){
+    //Length check
+    if(modbus_server_output_message_buffer_length(modbus_server_tag) < 5){
+        return 0;
+    }
+
     uint8_t footer_fails = 0;
-    footer_fails += !(modbus_server_message_buffer_LRC_check(&(modbus_server_tag->output_message_buffer)));
-    footer_fails += (modbus_server_tag->output_message_buffer.array[modbus_server_tag->output_message_buffer.length-2] != 0x0D);
-    footer_fails += (modbus_server_tag->output_message_buffer.array[modbus_server_tag->output_message_buffer.length-1] != 0x0A);
+
+    uint8_t LRC_correct = LRC(&(modbus_server_tag->output_message_buffer.array[1]), modbus_server_tag->output_message_buffer.length-5);
+    uint16_t ascii = modbus_server_output_message_buffer_get(modbus_server_tag, modbus_server_output_message_buffer_length(modbus_server_tag)-4)<<8 |
+    modbus_server_output_message_buffer_get(modbus_server_tag, modbus_server_output_message_buffer_length(modbus_server_tag)-3);
+    uint8_t LRC_current = modbus_server_test_ASCII_ascii_to_byte(ascii);
+
+    footer_fails += LRC_correct != LRC_current;
+    footer_fails += modbus_server_output_message_buffer_get(modbus_server_tag, modbus_server_output_message_buffer_length(modbus_server_tag)-2) != 0x0D;
+    footer_fails += modbus_server_output_message_buffer_get(modbus_server_tag, modbus_server_output_message_buffer_length(modbus_server_tag)-1) != 0x0A;
     return footer_fails == 0;
 }
 
@@ -249,9 +283,28 @@ uint8_t modbus_server_test_output_PDU_mapper_get_formatted_TCP(modbus_server_t* 
     return modbus_server_test_output_message_buffer_get_formatted(modbus_server_tag, index + 7);
 }
 
+//Inluded from file
+uint16_t modbus_server_test_ASCII_byte_to_ascii(uint8_t byte){
+    char lookup_table[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+    uint8_t upper_half_word = byte/16;
+    uint8_t lower_half_word = byte%16;
+    return (lookup_table[upper_half_word] << 8) | lookup_table[lower_half_word];
+}
 
+uint8_t modbus_server_test_ASCII_ascii_to_byte(uint16_t ascii){
+    return (modbus_server_test_ASCII_ascii_to_byte_lookup_table(ascii>>8) * 16) | modbus_server_test_ASCII_ascii_to_byte_lookup_table(ascii);
+}
 
-
-
+uint8_t modbus_server_test_ASCII_ascii_to_byte_lookup_table(uint8_t ascii){
+    if(ascii >= '0' && ascii <= '9'){
+        return ascii - '0';
+    }
+    else if(ascii >= 'A' && ascii <= 'F'){
+        return ascii - 'A' + 10;
+    }
+    else{
+        return 0;
+    }
+}
 
 

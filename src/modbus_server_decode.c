@@ -32,13 +32,21 @@ uint8_t modbus_server_input_message_buffer_decode_RTU(struct modbus_server_t* mo
     }
     modbus_server_tag->input_message_decode_buffer.address = modbus_server_input_message_buffer_get(modbus_server_tag, 0);
     modbus_server_tag->input_message_decode_buffer.function_code = modbus_server_input_message_buffer_get(modbus_server_tag, 1);
+
     uint8_t CRC_HIGH = modbus_server_input_message_buffer_get(modbus_server_tag, modbus_server_input_message_buffer_length(modbus_server_tag)-2);
     uint8_t CRC_LOW  = modbus_server_input_message_buffer_get(modbus_server_tag, modbus_server_input_message_buffer_length(modbus_server_tag)-1);
     modbus_server_tag->input_message_decode_buffer.CRC = (CRC_HIGH<<8) | (CRC_LOW);
+
     modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_array = &(modbus_server_tag->input_message_buffer.array[1]);
     modbus_server_tag->input_message_decode_buffer.input_PDU_mapper_length = modbus_server_input_message_buffer_length(modbus_server_tag) - 3;
     if (modbus_server_tag->input_message_decode_buffer.address != modbus_server_tag->address && modbus_server_tag->input_message_decode_buffer.address != 0) {
-        return 0; //Not for me
+        return 0; //Not for me, either wrong address or broadcast
+    }
+
+    //CRC check
+    uint16_t CRC_correct = CRC16(modbus_server_tag->input_message_buffer.array, modbus_server_tag->input_message_buffer.length-2);
+    if (CRC_correct != modbus_server_tag->input_message_decode_buffer.CRC){
+        //return 0;
     }
     return 1;
 }

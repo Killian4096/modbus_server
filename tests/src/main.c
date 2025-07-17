@@ -4,7 +4,10 @@
 #include "tests_header.h"
 
 #include "tests_utilities.c"
+#include "CRC.c"
+#include "LRC.c"
 #include "unit_tests_diagnostics.c"
+#include "unit_tests_functions.c"
 
 int main(void){
     CU_initialize_registry();
@@ -14,7 +17,6 @@ int main(void){
     CU_add_test(suite, "RTU_Tests", modbus_server_rtu_tests);
     CU_add_test(suite, "ASCII_Tests", modbus_server_ascii_tests);
     CU_add_test(suite, "TCP_Tests", modbus_server_tcp_tests);
-
 
     CU_basic_run_tests();
     CU_cleanup_registry();
@@ -36,4 +38,5 @@ void modbus_server_tcp_tests(){
 
 void unit_tests_standard(int test_protocol){
     unit_tests_diagnostics(test_protocol);
+    unit_tests_functions(test_protocol);
 }

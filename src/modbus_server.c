@@ -1,4 +1,11 @@
 #include "modbus_server.h"
+#include "modbus_server_exceptions.h"
+#include "modbus_server_functions.h"
+#include "modbus_server_message_buffer.h"
+#include "modbus_server_PDU_mapper.h"
+#include "ASCII.h"
+#include "CRC.h"
+#include "LRC.h"
 
 #include "modbus_server_functions.c"
 #include "modbus_server_exceptions.c"

@@ -1,5 +1,14 @@
+#include "CRC.h"
+#include "LRC.h"
+
+//Includes from lib
+uint16_t modbus_server_test_ASCII_byte_to_ascii(uint8_t);
+uint8_t modbus_server_test_ASCII_ascii_to_byte(uint16_t);
+uint8_t modbus_server_test_ASCII_ascii_to_byte_lookup_table(uint8_t);
+
 //Utility
 void modbus_server_test_input_message_buffer_generate_header(modbus_server_t*);
+
 void modbus_server_test_input_message_buffer_generate_header_RTU(modbus_server_t*);
 void modbus_server_test_input_message_buffer_generate_header_ASCII(modbus_server_t*);
 void modbus_server_test_input_message_buffer_generate_header_TCP(modbus_server_t*);
@@ -46,13 +55,18 @@ void unit_tests_standard(int);
 
 
 //FUNCTIONS
-
+void unit_tests_function(int);
+void unit_tests_function_01(int);
+void unit_tests_function_02(int);
+void unit_tests_function_03(int);
+void unit_tests_function_04(int);
 
 
 //EXCEPTIONS
 
 
 //DIAGNOSICS
+void unit_tests_diagnostics(int);
 void unit_tests_diagnostic_00(int);
 void unit_tests_diagnostic_01(int);
 void unit_tests_diagnostic_04(int);
