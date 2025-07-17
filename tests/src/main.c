@@ -8,6 +8,7 @@
 #include "LRC.c"
 #include "unit_tests_diagnostics.c"
 #include "unit_tests_functions.c"
+#include "unit_tests_exceptions.c"
 
 int main(void){
     CU_initialize_registry();
@@ -39,4 +40,5 @@ void modbus_server_tcp_tests(){
 void unit_tests_standard(int test_protocol){
     unit_tests_diagnostics(test_protocol);
     unit_tests_functions(test_protocol);
+    unit_tests_exceptions(test_protocol);
 }

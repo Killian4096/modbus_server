@@ -55,7 +55,7 @@ void unit_tests_standard(int);
 
 
 //FUNCTIONS
-void unit_tests_function(int);
+void unit_tests_functions(int);
 void unit_tests_function_01(int);
 void unit_tests_function_02(int);
 void unit_tests_function_03(int);
@@ -63,6 +63,8 @@ void unit_tests_function_04(int);
 
 
 //EXCEPTIONS
+void unit_tests_exceptions(int);
+void unit_tests_exception_01(int);
 
 
 //DIAGNOSICS
