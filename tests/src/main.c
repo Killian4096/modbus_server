@@ -15,14 +15,22 @@ int main(void){
 
 
     CU_pSuite suite = CU_add_suite("ModbusServerTestSuite", 0, 0);
+    #ifdef MODBUS_SERVER_COMPILE_PROTOCOL_RTU
     CU_add_test(suite, "RTU_Tests", modbus_server_rtu_tests);
+    #endif
+    #ifdef MODBUS_SERVER_COMPILE_PROTOCOL_ASCII
     CU_add_test(suite, "ASCII_Tests", modbus_server_ascii_tests);
+    #endif
+    #ifdef MODBUS_SERVER_COMPILE_PROTOCOL_TCP
     CU_add_test(suite, "TCP_Tests", modbus_server_tcp_tests);
+    #endif
 
     CU_basic_run_tests();
+    int failed_tests = CU_get_number_of_tests_failed();
     CU_cleanup_registry();
 
-    return 0;
+    //return CU_get_error();
+    return failed_tests;
 }
 
 void modbus_server_rtu_tests(){

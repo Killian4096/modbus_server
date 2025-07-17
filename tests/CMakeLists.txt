@@ -1,16 +1,37 @@
-set(TEST_NAME modbus_server_tests)
-
-add_executable(${TEST_NAME} src/main.c)
-
-target_include_directories(${TEST_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-target_link_libraries(${TEST_NAME} PUBLIC modbus_server)
+add_executable(modbus_server_RTU_tests src/main.c)
+add_executable(modbus_server_ASCII_tests src/main.c)
+add_executable(modbus_server_TCP_tests src/main.c)
+add_executable(modbus_server_FULL_tests src/main.c)
 
 
-target_compile_definitions(modbus_server PRIVATE MODBUS_SERVER_COMPILE_PROTOCOL_RTU)
-target_compile_definitions(modbus_server PRIVATE MODBUS_SERVER_COMPILE_PROTOCOL_ASCII)
-target_compile_definitions(modbus_server PRIVATE MODBUS_SERVER_COMPILE_PROTOCOL_RTU_OVER_TCP)
-target_compile_definitions(modbus_server PRIVATE MODBUS_SERVER_COMPILE_PROTOCOL_TCP)
+target_include_directories(modbus_server_RTU_tests   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(modbus_server_ASCII_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(modbus_server_TCP_tests   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(modbus_server_FULL_tests  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 
-target_link_libraries(${TEST_NAME} PUBLIC cunit)
+target_compile_definitions(modbus_server_RTU_tests PUBLIC MODBUS_SERVER_COMPILE_PROTOCOL_RTU)
+target_compile_definitions(modbus_server_ASCII_tests PUBLIC MODBUS_SERVER_COMPILE_PROTOCOL_ASCII)
+target_compile_definitions(modbus_server_TCP_tests PUBLIC MODBUS_SERVER_COMPILE_PROTOCOL_TCP)
+
+target_compile_definitions(modbus_server_FULL_tests PUBLIC MODBUS_SERVER_COMPILE_PROTOCOL_RTU)
+target_compile_definitions(modbus_server_FULL_tests PUBLIC MODBUS_SERVER_COMPILE_PROTOCOL_ASCII)
+target_compile_definitions(modbus_server_FULL_tests PUBLIC MODBUS_SERVER_COMPILE_PROTOCOL_TCP)
+
+
+target_link_libraries(modbus_server_RTU_tests   PUBLIC modbus_server_RTU)
+target_link_libraries(modbus_server_ASCII_tests PUBLIC modbus_server_ASCII)
+target_link_libraries(modbus_server_TCP_tests   PUBLIC modbus_server_TCP)
+target_link_libraries(modbus_server_FULL_tests  PUBLIC modbus_server)
+
+
+target_link_libraries(modbus_server_RTU_tests   PUBLIC cunit)
+target_link_libraries(modbus_server_ASCII_tests PUBLIC cunit)
+target_link_libraries(modbus_server_TCP_tests   PUBLIC cunit)
+target_link_libraries(modbus_server_FULL_tests  PUBLIC cunit)
+
+enable_testing()
+add_test(NAME test_RTU COMMAND $<TARGET_FILE:modbus_server_RTU_tests>)
+add_test(NAME test_ASCII COMMAND $<TARGET_FILE:modbus_server_ASCII_tests>)
+add_test(NAME test_TCP COMMAND $<TARGET_FILE:modbus_server_TCP_tests>)
+add_test(NAME test_FULL COMMAND $<TARGET_FILE:modbus_server_FULL_tests>)
